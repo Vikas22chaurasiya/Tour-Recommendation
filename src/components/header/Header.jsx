@@ -1,25 +1,33 @@
 import {
   faBed,
   faCalendarDays,
-  faCar,
   faPerson,
-  faPlane,
-  faTaxi,
+  faHeart,
+  faHome,
+  faList,
+  faWandMagicSparkles
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./header.css";
 import { DateRange } from "react-date-range";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import "react-date-range/dist/styles.css"; // main css file
 import "react-date-range/dist/theme/default.css"; // theme css file
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,useLocation} from "react-router-dom";
 import { SearchContext } from "../../context/SearchContext";
 import { AuthContext } from "../../context/AuthContext";
 import { Link } from "react-router-dom";
 
 const Header = ({ type }) => {
+  const location = useLocation();
+
+  console.log(location.pathname)
   const [destination, setDestination] = useState("");
+  const [home,sethome]=useState(false)
+  const [packages,setpackages]=useState(false)
+  const [rec,setrec]=useState(false)
+  const [fav,setfav]=useState(false)
   const [openDate, setOpenDate] = useState(false);
   const [dates, setDates] = useState([
     {
@@ -34,6 +42,38 @@ const Header = ({ type }) => {
     children: 0,
     room: 1,
   });
+  
+  useEffect(()=>{
+    if(location.pathname==="/"){
+
+      sethome(true)
+      setpackages(false)
+      setrec(false)
+      setfav(false)
+
+    }
+    else if(location.pathname==="/allpackages"){
+      setpackages(true)
+      sethome(false)
+      setrec(false)
+      setfav(false)
+    }
+    else if(location.pathname==="/recommendations"){
+      setrec(true)
+      sethome(false)
+      setpackages(false)
+      setfav(false)
+    }
+    else if(location.pathname==="/favorites"){
+      setfav(true)
+      sethome(false)
+      setpackages(false)
+      setrec(false)
+    }
+
+  },[location.pathname])
+
+
 
   const navigate = useNavigate();
   const { user } = useContext(AuthContext);
@@ -63,36 +103,37 @@ const Header = ({ type }) => {
         }
       >
         <div className="headerList">
-          <div className="headerListItem">
+          <div className={home? "headerListItem active" : "headerListItem"}>
             <Link to="/" style={{ color: "inherit", textDecoration: "none" }}>
-            <FontAwesomeIcon icon={faBed} />
+            <FontAwesomeIcon icon={faHome} />
             <span> Home</span>
         </Link>
           </div>
 
-          <div className="headerListItem">
+          <div className={packages? "headerListItem active" : "headerListItem"}>
           <Link to="/allpackages" style={{ color: "inherit", textDecoration: "none" }}>
-          <FontAwesomeIcon icon={faPlane} />
+          <FontAwesomeIcon icon={faList} />
             <span> All Packages</span>
         </Link>
           </div>
 
-          <div className="headerListItem">
+          <div className={rec? "headerListItem active" : "headerListItem"}>
             
             <Link to="/recommendations" style={{ color: "inherit", textDecoration: "none" }}>
-            <FontAwesomeIcon icon={faCar} />
+            <FontAwesomeIcon icon={faWandMagicSparkles} />
             <span> recommendations</span>
         </Link>
           </div>
 
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faBed} />
-            <span>Attractions</span>
+          <div className={fav? "headerListItem active" : "headerListItem"}>
+          <Link to="/favorites" style={{ color: "inherit", textDecoration: "none" }}>
+            <FontAwesomeIcon icon={faHeart} />
+            <span> Favorites</span>
+        </Link>
           </div>
-          <div className="headerListItem">
-            <FontAwesomeIcon icon={faTaxi} />
-            <span>Airport taxis</span>
-          </div>
+
+          
+          
         </div>
         {type !== "list" && (
           <>

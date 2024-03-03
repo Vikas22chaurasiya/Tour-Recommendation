@@ -25,3 +25,11 @@
   cursor: pointer;
   color: #003580;
 }
+
+
+.navButtonname{
+  margin-left: 20px;
+  border: none;
+  padding: 5px 10px;
+  color:inherit
+}

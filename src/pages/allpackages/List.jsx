@@ -2,11 +2,15 @@ import "./list.css";
 import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState,useContext } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../hooks/useFetch";
+import useFetchfav from "../../hooks/useFetchfav";
+import { AuthContext } from "../../context/AuthContext";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 const AllList = () => {
   const location = useLocation();
@@ -21,10 +25,25 @@ const AllList = () => {
     `/packages?city=${destination}&min=${min || 0 }&max=${max || 999}&limit=10`
   );
 
+  const { user } = useContext(AuthContext);
+  const { datalist,reFetch1,loading1 } = useFetchfav(
+    `/favorites/${user.username}/favlist`
+  );
+  console.log(datalist)
+
   const handleClick = () => {
     reFetch();
   };
 
+  const [time,settime]=useState(true)
+
+  setTimeout(() => {
+    settime(false)
+   
+  }, 500);
+
+  
+  
   return (
     <div>
       <Navbar />
@@ -38,6 +57,7 @@ const AllList = () => {
               <input 
                 onChange={(e) => setDestination(e.target.value)}
                 placeholder=""
+                value={destination}
                 type="text" />
             </div>
            
@@ -71,6 +91,7 @@ const AllList = () => {
                     min={1}
                     className="lsOptionInput"
                     placeholder={options.adult}
+                    value={options.adult}
                   />
                 </div>
                 <div className="lsOptionItem">
@@ -80,6 +101,7 @@ const AllList = () => {
                     min={0}
                     className="lsOptionInput"
                     placeholder={options.children}
+                    value={options.children}
                   />
                 </div>
                 <div className="lsOptionItem">
@@ -96,12 +118,22 @@ const AllList = () => {
             <button onClick={handleClick}>Search</button>
           </div>
           <div className="listResult">
-            {loading ? (
-              "loading"
+            {loading1 ? (
+              <>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              </>
             ) : (
               <>
                 {data.map((item) => (
-                  <SearchItem item={item} key={item._id} />
+                  <SearchItem item={item}  list ={datalist.favorites} key={item._id} />
                 ))}
               </>
             )}

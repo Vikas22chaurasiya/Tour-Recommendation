@@ -2,11 +2,15 @@ import "./list.css";
 import Navbar from "../../components/navbar/Navbar";
 import Header from "../../components/header/Header";
 import { useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useState,useContext } from "react";
 import { format } from "date-fns";
 import { DateRange } from "react-date-range";
 import SearchItem from "../../components/searchItem/SearchItem";
 import useFetch from "../../hooks/useFetch";
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+import useFetchfav from "../../hooks/useFetchfav";
+import { AuthContext } from "../../context/AuthContext";
 
 const RecList = () => {
   const [destination, setDestination] = useState("");
@@ -15,11 +19,17 @@ const RecList = () => {
   const [options, setOptions] = useState("");
   const [min, setMin] = useState(undefined);
   const [max, setMax] = useState(undefined);
+  const { user } = useContext(AuthContext);
+
+ 
 
   const { data, loading, error, reFetch } = useFetch(
     `/recommendations?city=${destination}&style=${style}&price=${price || 0}&min=${min || 0 }&max=${max || 999}&limit=10`
   );
 
+  const { datalist,reFetch1,loading1 } = useFetchfav(
+    `/favorites/${user.username}/favlist`
+  );
   const handleClick = () => {
     reFetch();
   };
@@ -114,12 +124,22 @@ const RecList = () => {
             <button onClick={handleClick}>Search</button>
           </div>
           <div className="listResult">
-            {loading ? (
-              "loading"
+            {loading1 ? (
+              <>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              <br></br>
+              <Skeleton count={10} style={{marginLeft:"50px",marginRight:"50px"}} />
+              </>
             ) : (
               <>
                 {data.map((item) => (
-                  <SearchItem item={item} key={item._id} />
+                  <SearchItem item={item} list ={datalist.favorites} key={item._id} />
                 ))}
               </>
             )}
